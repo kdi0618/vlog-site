@@ -25,6 +25,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: yarn
     - run: yarn build
+      env:
+        NEXT_PUBLIC_GTM_ID: ${{ secrets.NEXT_PUBLIC_GTM_ID }}
     # Upload build results to give it to deploy job
     - name: Upload build result
       uses: actions/upload-artifact@v1
