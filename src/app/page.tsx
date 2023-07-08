@@ -1,9 +1,19 @@
 import { css } from '../../styled-system/css';
-import { blogData } from './blogData';
 
 import { BlogList } from './components/blogList/BlogList';
- 
-export default function Home() {
+
+export async function getBlogData() {
+  const res = await fetch('https://share-with.g.kuroco.app/rcms-api/1/blog-list');
+  if (!res.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return res.json();
+}
+
+export default async function Home() {
+  const resData = await getBlogData();
+  const blogData = resData.list;
+
   return (
     <section className={css({
       backgroundColor: '#FFFAF0',
