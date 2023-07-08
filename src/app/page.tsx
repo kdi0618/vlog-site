@@ -2,7 +2,7 @@ import { css } from '../../styled-system/css';
 
 import { BlogList } from './components/blogList/BlogList';
 
-export async function getBlogData() {
+async function getBlogData() {
   const res = await fetch('https://share-with.g.kuroco.app/rcms-api/1/blog-list');
   if (!res.ok) {
     throw new Error('Network response was not ok');
