@@ -16,7 +16,7 @@
 /dist
 
 # misc
-.DS_Store
+**/.DS_Store
 *.pem
 
 # debug
@@ -36,3 +36,6 @@ next-env.d.ts
 
 # vscode
 .vscode
+
+# Panda CSS
+styled-system
