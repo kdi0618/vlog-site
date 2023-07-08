@@ -1,38 +1,44 @@
-name: CI/CD
+name: Build and deploy by update content
 
-# trigger
 on:
   push:
-    branches: [ main ]
-  repository_dispatch:
-    branches: [ main ]
-    types: [update_post]
+    branches:
+      - main
+  issue_comment:
+    types: [created, edited]
+  workflow_dispatch:
 
-# Run build and deploy jobs in sequence
 jobs:
+  #for Push
   build:
+    name: Build(pushed)
+    if: (github.repository == 'kdi0618/vlog-site' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch'))
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [16.18.0]
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: yarn
-    - run: yarn build
-      env:
-        NEXT_PUBLIC_GTM_ID: ${{ secrets.NEXT_PUBLIC_GTM_ID }}
-    # Upload build results to give it to deploy job
-    - name: Upload build result
-      uses: actions/upload-artifact@v1
-      with:
-        name: build
-        path: dist/
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
+        env:
+          NEXT_PUBLIC_GTM_ID: ${{ secrets.NEXT_PUBLIC_GTM_ID }}
+      - name: Archive Production Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.sha }}-${{ github.run_id }}
+          path: dist
+          retention-days: 7
+      - name: Webhook
+        uses: diverta/workflow-webhook@v2
+        env:
+          webhook_url: "https://share-with.g.kuroco.app/direct/menu/github/"
+          webhook_secret: "0fc0a26aea284bf17920c0846bf3e459"
+          data: '{"single_zip":"0","domain":"share-with.g.kuroco-front.app", "repository":"${{ github.repository }}", "run_id":"${{ github.run_id }}", "hash":"${{ github.sha }}"}'
 
   deploy:
     # Specify the job order
@@ -43,7 +49,7 @@ jobs:
     steps:
     # Get built results
     - name: Download build result
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: build
         path: dist/
