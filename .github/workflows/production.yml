@@ -1,4 +1,4 @@
-name: Build and deploy by update content
+name: For production by push and update cms
 
 on:
   push:
@@ -51,7 +51,7 @@ jobs:
     - name: Download build result
       uses: actions/download-artifact@v3
       with:
-        name: build
+        name: ${{ github.sha }}-${{ github.run_id }}
         path: dist/
     # Upload to S3
     - name: Publish to AWS S3
