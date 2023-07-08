@@ -3,12 +3,16 @@
 import { css } from '../../../../../styled-system/css';
 import { BlogItem } from '@/types/blogItem';
 
-export function BlogListItem(props: BlogItem) {
-  const { title, image, alt, date, description } = props;
+interface BlogListItemProps extends BlogItem {
+  key: number,
+}
+
+export function BlogListItem(props: BlogListItemProps) {
+  const { title, image, alt, date, description, key } = props;
 
   return (
-    <li className={css({
-      background: `no-repeat url(${image})`,
+    <li key={key} className={css({
+      background: `no-repeat url(${image.url})`,
       backgroundSize: 'contain',
       flexShrink: 0,
       transition: 'all 0.3s ease-in-out',
@@ -27,7 +31,7 @@ export function BlogListItem(props: BlogItem) {
         height: '100%',
       })}>
         <div>
-          <img src={image} alt={alt} />
+          <img src={image.url} alt={alt} />
         </div>
         <time className={css({
           fontSize: '10px',
